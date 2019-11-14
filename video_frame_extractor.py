@@ -11,21 +11,21 @@ parser = argparse.ArgumentParser(description='Video frames extraction')
 parser.add_argument('-i',
         action = 'store',
         dest = 'input',
-        help = 'input video',
+        help = 'Input video',
         required = True)
 
 parser.add_argument('-o',
         action = 'store',
         dest = 'output',
-        help = 'output path (default: same as input video source)')
+        help = 'Output path (default: same as input video source)')
 
-parser.add_argument('--half',
-        action = 'store_true',
-        help = 'set extraction rate as 0.5 (default: 1.0)')
+parser.add_argument('-e',
+        type = int,
+        action = 'store',
+        dest = 'ex_time',
+        default = 1,
+        help = 'Extract one frame per EX_TIME frames. (default: full extraction)')
 
-parser.add_argument('--quarter',
-        action = 'store_true',
-        help = 'set extraction rate as 0.25 (default: 1.0)')
 
 args = parser.parse_args()
 
@@ -52,16 +52,8 @@ if not os.path.exists(output_dir):
 
 # Extraction rate
 ex_numerator = 1
+ex_denominator = args.ex_time
 
-if args.half and not args.quarter:
-    ex_denominator = 2
-elif args.quarter and not args.half:
-    ex_denominator = 4
-elif not (args.quarter and args.half):
-    ex_denominator = 1
-else:
-    print('Please specify ONLY one extraction rate: default for 1.0, --half for 0.5, and --quarter for 0.25.')
-    exit()
 
 ex_r = ex_numerator/ex_denominator
 
@@ -77,7 +69,7 @@ fps = cap.get(cv2.CAP_PROP_FPS)
 # Print summary
 print('Number of Frames: %d'   % (frame_nu))
 print('Frame Rate      : %.1f' % (fps))
-print('Extraction Rate : %.1f' % (ex_r))
+print('Extraction Rate : 1/%d' % (ex_denominator))
 print('Output Path     : %s'   % (output_dir))
 
 
@@ -104,9 +96,10 @@ while(cap.isOpened()):
     if j == ex_denominator:
         j = 0
 # Progress bar
-    prg_count = round(50*(i+1)/frame_nu)
+    prg_count_0 = round(50*(i+1)/frame_nu)
+    prg_count_1 = round(100*(i+1)/frame_nu)
     sys.stdout.write('\r')
-    sys.stdout.write("Progress        : [%-50s] %d%%" % ('='*prg_count, 2*prg_count))
+    sys.stdout.write("Progress        : [%-50s] %d%%" % ('='*prg_count_0, prg_count_1))
     sys.stdout.flush()
 
 toc = time.time()

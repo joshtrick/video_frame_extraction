@@ -64,11 +64,14 @@ print('Processing      : %s'   % (args.input))
 cap = cv2.VideoCapture(args.input)
 frame_nu = cap.get(cv2.CAP_PROP_FRAME_COUNT)
 fps = cap.get(cv2.CAP_PROP_FPS)
+frame_h = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
+frame_w = cap.get(cv2.CAP_PROP_FRAME_WIDTH)
 
 
 # Print summary
 print('Number of Frames: %d'   % (frame_nu))
 print('Frame Rate      : %.1f' % (fps))
+print('Frame Size      : %dx%d'% (frame_w, frame_h))
 print('Extraction Rate : 1/%d' % (ex_denominator))
 print('Output Path     : %s'   % (output_dir))
 
